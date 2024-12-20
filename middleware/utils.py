@@ -1,22 +1,15 @@
-import logging
-from typing import Dict, List
-from uuid import UUID
-import pytz
-import requests
-from django.conf import settings
-
-from datetime import datetime
-
-from authlib.jose import jwt
 import base64
 import json
+import logging
+from datetime import datetime
+from typing import Any, Dict, List, TypeVar
+from uuid import UUID
 
-from authlib.jose import JsonWebKey
-
-
-from typing import List, Dict, TypeVar, Any
+import pytz
+import requests
+from authlib.jose import JsonWebKey, jwt
+from django.conf import settings
 from pydantic import BaseModel
-
 
 T = TypeVar("T", bound=BaseModel)
 logger = logging.getLogger(__name__)

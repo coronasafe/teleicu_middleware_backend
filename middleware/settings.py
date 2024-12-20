@@ -10,13 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-from authlib.jose import JsonWebKey
 import base64
-from pathlib import Path
-import onvif
-from pathlib import Path
-import environ
 import json
+from pathlib import Path
+
+import environ
+import onvif
+from authlib.jose import JsonWebKey
 
 from middleware.utils import generate_encoded_jwks
 
@@ -195,8 +195,6 @@ JWKS = JsonWebKey.import_key_set(
     json.loads(base64.b64decode(env("JWKS_BASE64", default=generate_encoded_jwks())))
 )
 CELERY_BROKER_URL = "redis://redis:6379"
-
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 
 ENABLE_UTC = True

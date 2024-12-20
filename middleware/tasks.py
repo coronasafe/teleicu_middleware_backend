@@ -1,10 +1,12 @@
-from typing import Dict, Optional
-from uuid import UUID
-from celery import shared_task
-import requests
-from django.conf import settings
 import logging
 from datetime import datetime
+from typing import Dict, Optional
+from uuid import UUID
+
+import requests
+from celery import shared_task
+from django.conf import settings
+
 from middleware.camera.onvif_zeep_camera_controller import OnvifZeepCameraController
 from middleware.camera.types import CameraAsset
 from middleware.models import Asset, AssetClasses
@@ -14,21 +16,13 @@ from middleware.observation.types import (
     DeviceID,
     MonitorOptions,
 )
-from middleware.redis_manager import redis_manager
-
-from middleware.observation.utils import get_vitals_from_observations
-from middleware.utils import (
-    _get_headers,
-    file_automated_daily_rounds,
-    get_patient_id,
-)
-
-
 from middleware.observation.utils import (
     get_data_for_s3_dump,
     get_vitals_from_observations,
     make_data_dump_to_s3,
 )
+from middleware.redis_manager import redis_manager
+from middleware.utils import _get_headers, file_automated_daily_rounds, get_patient_id
 
 logger = logging.getLogger(__name__)
 

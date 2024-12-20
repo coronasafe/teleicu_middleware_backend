@@ -1,5 +1,6 @@
-from unittest.mock import MagicMock, patch
 from unittest import TestCase as UnitTest
+from unittest.mock import MagicMock, patch
+
 from middleware.camera.exceptions import InvalidCameraCredentialsException
 from middleware.camera.onvif_zeep_camera_controller import OnvifZeepCameraController
 from middleware.camera.types import CameraAsset

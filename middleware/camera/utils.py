@@ -1,12 +1,12 @@
-import logging
 import functools
-from drf_spectacular.utils import OpenApiParameter
+import logging
+from time import sleep
 
 from django.conf import settings
+from django.core.cache import cache
+from drf_spectacular.utils import OpenApiParameter
 
 from middleware.observation.types import DeviceID
-from time import sleep
-from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +22,7 @@ cam_params = [
         name="password", description="Camera password", required=True, type=str
     ),
 ]
+
 
 def wait_for_movement_completion(func):
     @functools.wraps(func)

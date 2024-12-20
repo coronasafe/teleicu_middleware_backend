@@ -1,6 +1,8 @@
+import logging
+
 from django.conf import settings
-from pydantic import ValidationError
-from rest_framework import viewsets, status
+from drf_spectacular.utils import extend_schema
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -8,7 +10,6 @@ from middleware.camera.exceptions import (
     CameraLockedException,
     InvalidCameraCredentialsException,
 )
-from middleware.redis_manager import redis_manager
 from middleware.camera.onvif_zeep_camera_controller import OnvifZeepCameraController
 from middleware.camera.types import (
     CameraAsset,
@@ -19,9 +20,8 @@ from middleware.camera.types import (
     SanpshotResponse,
     StatusResponseModel,
 )
-import logging
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-from middleware.camera.utils import is_camera_locked, cam_params
+from middleware.camera.utils import cam_params, is_camera_locked
+from middleware.redis_manager import redis_manager
 from middleware.types import StatusResponse
 
 logger = logging.getLogger(__name__)
@@ -29,7 +29,6 @@ logger = logging.getLogger(__name__)
 
 @extend_schema(tags=["Camera Operations"])
 class CameraViewSet(viewsets.ViewSet):
-
     @extend_schema(
         summary="Get Camera Status",
         description="Retrieve the status of the camera based on provided hostname, port, username, and password.",
@@ -55,7 +54,6 @@ class CameraViewSet(viewsets.ViewSet):
     )
     @action(detail=False, methods=["get"])
     def presets(self, request):
-
         cam_request = CameraAsset(
             hostname=str(request.GET.get("hostname")),
             port=int(request.GET.get("port")),
@@ -73,7 +71,6 @@ class CameraViewSet(viewsets.ViewSet):
     )
     @action(detail=False, methods=["post"], url_name="presets")
     def set_preset(self, request):
-
         cam_request = CameraAssetPresetRequest.model_validate(request.data)
         cam: OnvifZeepCameraController = self.get_camera_controller(cam_request)
         result = cam.set_preset(preset_name=cam_request.preset_name)
@@ -86,7 +83,6 @@ class CameraViewSet(viewsets.ViewSet):
     )
     @action(detail=False, methods=["post"], url_path="gotoPreset")
     def go_to_preset(self, request):
-
         cam_request = CameraAssetPresetRequest.model_validate(request.data)
         self.check_camera_state(device_id=cam_request.hostname, raise_error=True)
         cam: OnvifZeepCameraController = self.get_camera_controller(cam_request)
@@ -120,7 +116,6 @@ class CameraViewSet(viewsets.ViewSet):
     )
     @action(detail=False, methods=["post"], url_path="relativeMove")
     def relative_move(self, request):
-
         cam_request = CameraAssetMoveRequest.model_validate(request.data)
         self.return_if_camera_locked(device_id=cam_request.hostname, raise_error=True)
 
@@ -164,10 +159,9 @@ class CameraViewSet(viewsets.ViewSet):
             raise CameraLockedException
 
     def return_if_camera_locked(self, device_id, raise_error=False):
-
         try:
             self._check_camera_state(device_id=device_id, raise_error=raise_error)
-        except CameraLockedException as e:
+        except CameraLockedException:
             logger.debug("Camera with host: %s is locked.", device_id)
             return Response(
                 {

@@ -1,7 +1,8 @@
-from django.db import models
-import uuid
-from django.utils import timezone
 import enum
+import uuid
+
+from django.db import models
+from django.utils import timezone
 
 
 class AssetClasses(enum.Enum):

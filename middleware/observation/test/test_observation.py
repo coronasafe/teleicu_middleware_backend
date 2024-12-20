@@ -1,13 +1,14 @@
 from unittest import TestCase as UnitTest
+from unittest.mock import MagicMock, call, patch
+
 from middleware.observation.test.util_factory import ObservationFactory
 from middleware.observation.types import ObservationID
 from middleware.observation.views import (
+    blood_pressure_data,
     flatten_observations,
     store_and_send_observations,
     update_blood_pressure,
-    blood_pressure_data,
 )
-from unittest.mock import call, patch, MagicMock
 
 
 class TestObservation(UnitTest):

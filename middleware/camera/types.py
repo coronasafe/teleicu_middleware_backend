@@ -1,5 +1,7 @@
 from typing import Dict, Optional
+
 from pydantic import AliasChoices, BaseModel, Field
+
 from middleware.observation.types import DeviceID
 
 

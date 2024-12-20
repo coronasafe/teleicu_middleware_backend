@@ -1,7 +1,6 @@
-import factory
-
 from datetime import datetime
 
+import factory
 
 from middleware.observation.types import (
     BloodPressure,

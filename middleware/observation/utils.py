@@ -1,23 +1,24 @@
-from datetime import datetime, timedelta
 import logging
-import boto3
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Union
 
-from django.utils.timezone import now, make_aware
-from typing import Dict, List, Union, Optional
-from middleware.observation.types import (
-    DailyRoundObservation,
-    Observation,
-    ObservationID,
-    ObservationList,
-    Status,
-    DataDumpRequest,
-)
+import boto3
+from botocore.exceptions import NoCredentialsError, PartialCredentialsError
+from django.conf import settings
+from django.core.cache import cache
+from django.utils.timezone import make_aware, now
 from sentry_sdk.crons import capture_checkin
 from sentry_sdk.crons.consts import MonitorStatus
-from botocore.exceptions import NoCredentialsError, PartialCredentialsError
-from django.core.cache import cache
-from django.conf import settings
-from middleware.observation.types import DeviceID, StaticObservation
+
+from middleware.observation.types import (
+    DailyRoundObservation,
+    DataDumpRequest,
+    DeviceID,
+    Observation,
+    ObservationID,
+    StaticObservation,
+    Status,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -287,6 +288,7 @@ def get_value_from_data(
     else:
         return observation.value
 
+
 def extract_datetime(key):
     # Split the string to get the timestamp part
     timestamp_str = key.split("_", 1)[1]
@@ -305,7 +307,6 @@ def get_observations_from_redis():
 
 
 def get_static_observations(device_id: DeviceID):
-
     observations = get_observations_from_redis()
     stale_time = now() - timedelta(minutes=settings.UPDATE_INTERVAL)
 

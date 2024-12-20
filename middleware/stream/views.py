@@ -1,22 +1,21 @@
 import logging
+
+import jwt
 from django.conf import settings
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from pydantic import ValidationError
 from requests import Response
-from rest_framework.decorators import authentication_classes
-from rest_framework.decorators import action
+from rest_framework import status, viewsets
+from rest_framework.decorators import action, authentication_classes
+
 from middleware.authentication import CareAuthentication
-from rest_framework import viewsets, status
-import jwt
 from middleware.stream.types import (
     StreamResponse,
     VerifyStreamTokenRequest,
     VideoStreamRequest,
     VitalSteamRequest,
 )
-from drf_spectacular.utils import extend_schema
-
 from middleware.utils import generate_jwt
-from drf_spectacular.utils import extend_schema, extend_schema_view
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +41,7 @@ class MiddlewareStreamViewSet(viewsets.ViewSet):
     def get_video_feed_stream_token(self, request):
         try:
             request = VideoStreamRequest.model_validate(request)
-        except ValidationError as e:
+        except ValidationError:
             return Response(
                 {"message": "stream and ip are required"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -67,7 +66,7 @@ class MiddlewareStreamViewSet(viewsets.ViewSet):
     def get_vital_stream_token(self, request):
         try:
             request = VitalSteamRequest.model_validate(request)
-        except ValidationError as e:
+        except ValidationError:
             return Response(
                 {"message": "asset_id and ip are required"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -91,7 +90,7 @@ class MiddlewareStreamViewSet(viewsets.ViewSet):
     def validate_stream_token(self, request):
         try:
             request = VerifyStreamTokenRequest.model_validate(request)
-        except ValidationError as e:
+        except ValidationError:
             return Response(
                 {"message": "token, stream, and ip are required"},
                 status=status.HTTP_400_BAD_REQUEST,

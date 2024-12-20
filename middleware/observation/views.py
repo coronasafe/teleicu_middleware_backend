@@ -1,27 +1,25 @@
 from datetime import datetime
 from typing import Dict, List
+
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.conf import settings
-from middleware.redis_manager import redis_manager
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
-from drf_spectacular.utils import extend_schema
 
-from middleware.types import StatusResponse
-from middleware.utils import group_by
-
-from middleware.observation.types import DeviceID, Status
-
-
+from middleware.authentication import CareAuthentication
 from middleware.observation.types import (
+    DeviceID,
     Observation,
     ObservationID,
     ObservationList,
+    Status,
 )
-
-from middleware.authentication import CareAuthentication
+from middleware.redis_manager import redis_manager
+from middleware.types import StatusResponse
+from middleware.utils import group_by
 
 blood_pressure_data: Dict[DeviceID, Observation] = {}
 

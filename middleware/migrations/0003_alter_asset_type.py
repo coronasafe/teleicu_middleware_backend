@@ -4,15 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('middleware', '0002_remove_asset_middleware__externa_5ec6b8_idx_and_more'),
+        ("middleware", "0002_remove_asset_middleware__externa_5ec6b8_idx_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='asset',
-            name='type',
-            field=models.CharField(choices=[('ONVIF', 'OnvifAsset'), ('HL7MONITOR', 'HL7MonitorAsset'), ('VENTILATOR', 'VentilatorAsset')], default='HL7MonitorAsset', max_length=20),
+            model_name="asset",
+            name="type",
+            field=models.CharField(
+                choices=[
+                    ("ONVIF", "OnvifAsset"),
+                    ("HL7MONITOR", "HL7MonitorAsset"),
+                    ("VENTILATOR", "VentilatorAsset"),
+                ],
+                default="HL7MonitorAsset",
+                max_length=20,
+            ),
         ),
     ]

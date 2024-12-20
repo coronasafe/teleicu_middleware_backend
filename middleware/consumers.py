@@ -1,12 +1,12 @@
+import asyncio
 import json
 import time
-from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer
-from channels.consumer import AsyncConsumer
-import json
-import asyncio
+
 import psutil
+from asgiref.sync import async_to_sync
+from channels.consumer import AsyncConsumer
 from channels.exceptions import StopConsumer
+from channels.generic.websocket import WebsocketConsumer
 
 
 class observations(WebsocketConsumer):

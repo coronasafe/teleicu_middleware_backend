@@ -1,9 +1,9 @@
 from datetime import datetime
-from django.utils.timezone import now
 from enum import Enum
 from typing import Dict, List, NewType, Optional
-from pydantic import BaseModel, Field, RootModel, field_serializer
 
+from django.utils.timezone import now
+from pydantic import BaseModel, Field, RootModel, field_serializer
 
 DeviceID = NewType("DeviceID", str)
 

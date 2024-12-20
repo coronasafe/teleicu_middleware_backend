@@ -1,17 +1,14 @@
-from datetime import datetime
-from django.conf import settings
-from django.shortcuts import render
 import requests
-from rest_framework.decorators import api_view
-from drf_spectacular.utils import extend_schema, extend_schema_view
-
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from django.conf import settings
+from django.utils import timezone
 from django.db import connection
 from django.db.utils import OperationalError
+from django.shortcuts import render
+from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework import status, viewsets
+from rest_framework.decorators import action, api_view
+from rest_framework.response import Response
+
 from middleware.models import Asset
 from middleware.types import (
     HealthCheckResponse,
@@ -40,7 +37,7 @@ class MiddlewareHealthViewSet(viewsets.ViewSet):
     )
     @action(detail=False, methods=["get"])
     def ping(self, request):
-        return Response({"pong": datetime.now()}, status=status.HTTP_200_OK)
+        return Response({"pong": timezone.now()}, status=status.HTTP_200_OK)
 
     @extend_schema(
         responses={200: HealthCheckResponse},
@@ -125,7 +122,7 @@ def verify_token(request):
         return Response(
             {"error": "no token provided"}, status=status.HTTP_401_UNAUTHORIZED
         )
-    res = requests.post(settings.CARE_VERIFY_TOKEN_URL, data={"token": token})
+    res = requests.post(settings.CARE_VERIFY_TOKEN_URL, data={"token": request.Token})
     res.raise_for_status()
     middleware_token = generate_jwt(exp=60 * 20)
     return Response({"token": {middleware_token}}, status=status.HTTP_200_OK)

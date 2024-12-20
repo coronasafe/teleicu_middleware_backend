@@ -1,17 +1,17 @@
-from django.conf import settings
-from rest_framework import HTTP_HEADER_ENCODING
 import logging
-from channels.exceptions import DenyConnection
-from django.core.cache import cache
+
+import jwt
 import requests
 from channels.auth import AuthMiddlewareStack
-
+from channels.exceptions import DenyConnection
 from channels.middleware import BaseMiddleware
-from rest_framework_simplejwt.authentication import JWTAuthentication
-import jwt
-from rest_framework_simplejwt.exceptions import AuthenticationFailed, InvalidToken
-from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
+from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
+from django.core.cache import cache
+from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
+from rest_framework import HTTP_HEADER_ENCODING
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.exceptions import AuthenticationFailed, InvalidToken
 from rest_framework_simplejwt.tokens import Token
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ class MiddlewareUser(AnonymousUser):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.username = f"middleware_123"
+        self.username = "middleware_123"
 
     @property
     def is_authenticated(self):
