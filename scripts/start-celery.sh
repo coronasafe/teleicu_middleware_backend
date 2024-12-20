@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Navigate to the app directory
-cd /app
-
 # Run migrations
 python manage.py migrate
 

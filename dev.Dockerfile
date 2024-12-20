@@ -13,8 +13,6 @@ RUN pipenv install --system --categories "packages dev-packages"
 
 COPY . /app
 
-#add health check
-
 WORKDIR /app
 
 EXPOSE 8090

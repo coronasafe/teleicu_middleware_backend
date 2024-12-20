@@ -1,40 +1,42 @@
-# Stage 1: Build stage
-FROM python:3.12-slim-bookworm AS builder
+FROM python:3.13-slim-bookworm AS base
 
-ENV PYTHONUNBUFFERED 1
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PATH /venv/bin:$PATH
+ARG APP_HOME=/app
 
-# Create virtual environment
-RUN python -m venv /venv
+ARG BUILD_ENVIRONMENT="production"
+ARG APP_VERSION="unknown"
 
-# Install pipenv and dependencies
-RUN pip install --no-cache-dir pipenv
+WORKDIR $APP_HOME
 
-# Copy Pipfile and Pipfile.lock for dependency installation
-COPY Pipfile Pipfile.lock ./
+ENV BUILD_ENVIRONMENT=$BUILD_ENVIRONMENT
+ENV APP_VERSION=$APP_VERSION
+ENV PYTHONUNBUFFERED=1s
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PIPENV_VENV_IN_PROJECT=1
+ENV PIPENV_CACHE_DIR=/root/.cache/pip
+ENV PATH=$APP_HOME/.venv/bin:$PATH
 
-# Install only production dependencies
-RUN pipenv install --system --deploy --ignore-pipfile
 
-# Stage 2: Production stage
-FROM python:3.12-slim-bookworm
+FROM base AS builder
 
-ENV PYTHONUNBUFFERED 1
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PATH /venv/bin:$PATH
+RUN python -m venv $APP_HOME/.venv
+COPY Pipfile Pipfile.lock $APP_HOME/
+RUN --mount=type=cache,target=/root/.cache/pip pip install pipenv==2024.4.0
+RUN --mount=type=cache,target=/root/.cache/pip pipenv install --deploy --categories "packages"
 
-# Copy virtual environment from the builder stage
-COPY --from=builder /venv /venv
 
-# Copy the application code
-COPY . /app
+FROM base AS runtime
 
-# Set the working directory
-WORKDIR /app
+RUN addgroup --system django \
+  && adduser --system --ingroup django django
 
-# Expose the application port
+RUN chown django:django $APP_HOME
+
+COPY --from=builder --chown=django:django $APP_HOME/.venv $APP_HOME/.venv
+
+COPY --chmod=0755 --chown=django:django ./scripts/*.sh $APP_HOME
+
+COPY --chown=django:django . $APP_HOME
+
+USER django
+
 EXPOSE 8090
-
-
-CMD ["python", "manage.py" , "runserver" , "0.0.0.0:8090"]
