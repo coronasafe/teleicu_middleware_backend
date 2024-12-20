@@ -1,4 +1,4 @@
-name: Deploy Care
+name: Build docker images
 
 on:
   workflow_dispatch:
